@@ -13,6 +13,8 @@ FLEX = flex
 BISON = bison
 CFLAGS = -Wall -Wno-misleading-indentation -DVERSION=\"v$(VERSION)\" -std=gnu89 -fPIC -ggdb
 CLIBS = -I$(LIB) -lm -lcrypto
+CPPCHECK = cppcheck
+CPPCHECKFLAGS = -q --error-exitcode=1
 
 $(BIN)/armake: \
         $(patsubst %.c, %.o, $(wildcard $(SRC)/*.c)) \
@@ -49,6 +51,9 @@ $(SRC)/%.o: $(SRC)/%.c $(SRC)/rapify.tab.c $(SRC)/rapify.yy.c
 $(LIB)/%.o: $(LIB)/%.c
     @echo "  CC  $<"
     @$(CC) $(CFLAGS) -o $@ -c $< $(CLIBS)
+
+cppcheck: $(wildcard $(SRC)/*.c)
+    $(CPPCHECK) $(CHECKFLAGS) $^ --xml
 
 test: $(BIN)/armake
     @./test/run.sh
